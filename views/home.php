@@ -37,27 +37,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     var page = 0;
     var maxPageForStudent = <?php echo $max_page_for_student; ?>;
     $(document).ready(function () {
-        loadMoreData();
-        function loadMoreData() {
-                        //for current page index check
-                        console.log(page);
-                        if(page<maxPageForStudent){
-                        page++;//to increase the page
-                        }
-                        //for next page index
-                        console.log(page);
+        
+
+
+        //updated function////////////////////////////
+        loadData('next');
+        function loadData(direction) {
+            //direction and update page accordingly
+            if (direction === 'next' && page < maxPageForStudent) {
+                page++;
+            } else if (direction === 'prev' && page > 1) {
+                page--;
+            }
+
+            // Log current page index
+            console.log(page);
+
             $.ajax({
                 type: 'GET',
                 url: '<?= base_url('index.php/home/get_table_data'); ?>/' + page,
                 success: function (data) {
                     if (data.trim() !== '') {
-                        
+                        // Update table body with new data
                         $('#table-body').empty();
                         $('#table-body').append(data);
 
+                        // Update current page button text
                         $('#current_button').text(page);
-                        
-                        
                     } else {
                         alert('No more data available.');
                     }
@@ -68,47 +74,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             });
         }
 
-        function loadPreData() {
-            //for current page index check
-                        console.log(page);
-                        if(page>1){
-                        page--;//to decrease the page
-                        }
-                        //for next page index
-                        console.log(page);
-                        
-            $.ajax({
-                
-                type: 'GET',
-                url: '<?= base_url('index.php/home/get_table_data'); ?>/' + page,
-                success: function (data) {
-                    if (data.trim() !== '') {
-                        
-                        console.log(page);
-                        $('#table-body').empty();
-                        $('#table-body').append(data);
-
-                        $('#current_button').text(page);
-                        
-                        
-                    } else {
-                        alert('No more data available.');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
-                }
-            });
-        }
 
 
         // Load more data on button click
         $('#load-more-button').on('click', function () {
-            loadMoreData();
+            loadData('next');
         });
 
         $('#load-pre-button').on('click', function () {
-            loadPreData();
+            loadData('prev');
         });
     });
 </script>
